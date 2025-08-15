@@ -1,0 +1,9 @@
+{
+    "version": "0.2 beta",
+    "urls": {
+        "wyn": "https://api.wynncraft.com/v3"
+    },
+    "tokens": {
+        "wyn": null
+    }
+}
