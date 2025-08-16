@@ -3,7 +3,7 @@ const guildCMD = require('./command/guild.js')
 const names = JSON.parse((FS.open('../storage/commands/names.json', 'utf-8')).read())
 
 const commands = [
-    Chat.createCommandBuilder('lg').greedyStringArg(names.guildCommand).executes(JavaWrapper.methodToJavaAsync((ent)=>{
+    Chat.createCommandBuilder(names.guildCommand).greedyStringArg('name').executes(JavaWrapper.methodToJavaAsync((ent)=>{
         const name = ent.getArg('name')
         if (name.match(/[^a-zA-Z ]/g)) {
             Chat.log(Chat.createTextBuilder()

@@ -1,4 +1,4 @@
-const {WynGET} = require('../../main.js')
+const {WynGET, timer} = require('../../functions.js')
 
 module.exports = name=> {
     const response = WynGET((name.length<=4)? `/guild/prefix/${name}`: `/guild/${name}`)
