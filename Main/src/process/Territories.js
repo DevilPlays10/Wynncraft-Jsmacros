@@ -39,7 +39,7 @@ function getMapHQS() {
     return [...new Set(hq.map(ent=>ent.trim()))]
 }
 
-function getExternals(terr) {
+function getExternals(terr) { //obnky reutnsrs owned extenrlas
     if (!terrs[terr]) return []
     const guild = terrs[terr].guild.prefix
     const ext = []

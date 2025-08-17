@@ -1,19 +1,26 @@
 let currentWar;
 
 const {getTerData, getMapHQS, getExternals} = require('./Territories.js')
+const {CWar:sendwar} = require('./Eco')
 
-Chat.log(getTerData('Ancient Excavation'))
-Chat.log(getExternals('Ancient Excavation'))
-// Chat.log(getMapHQS())
+// Chat.log(getTerData('Ancient Excavation'))
+// Chat.log(getExternals('Ancient Excavation'))
+// // Chat.log(getMapHQS())
+
+const queued = {}
 
 function queue(ter) {
-    Chat.log(ter)
+    queued[ter] = {
+        hq: getMapHQS().includes(ter),
+        ext: getExternals(ter).length,
+        data: getTerData(ter)
+    }
 }
 
 function War(data) {
     if (!currentWar) {
-        const ter = getTerData(data[2])
-        const hq = getMapHQS().includes(data[2])
+        const ter = queued[data[2]]? queued[data[2]].data: getTerData(data[2])
+        const hq = queued[data[2]]? queued[data[2]].hq : getMapHQS().includes(data[2])
         currentWar={
             Cons: ter?.cons??0,
             Guild: data[1],
@@ -27,10 +34,9 @@ function War(data) {
             EndHP: data[3],
             EndDMG: data[5],
             HQ: hq,
-            externals: hq? getExternals(data[2]): null,
-            aura: 0,
-            volley: 0,
+            externals: hq? queued[data[2]]? queued[data[2]].ext : getExternals(data[2]).length: null,
         }
+        if (queued[data[2]]) delete queued[data[2]]
     } else {
         currentWar.endtime = (new Date()/1000).toFixed()
         currentWar.EndHP = data[3],
@@ -45,12 +51,12 @@ function markBonus(data) {
     if (!currentWar) return
     if (lastevt) {
         if (data===sounds[1]) {
+            if (!currentWar.aura) currentWar.aura=(new Date()/1000).toFixed()-currentWar.time
             currentWar.aura++
-            Chat.log('Aura')
             lastevt=null
         } else if ((new Date() - lastevt.time)>100) {
+            if (!currentWar.volley) currentWar.volley=(new Date()/1000).toFixed()-currentWar.time
             currentWar.volley++
-            Chat.log("Volley")
             lastevt=null
         }
     }
@@ -59,8 +65,7 @@ function markBonus(data) {
 
 setInterval(() => {
     if ((new Date()/1000-currentWar?.endtime)>100) {
-        Chat.log(`marked war ${currentWar.Territory} as finished`)
-        Chat.log(currentWar)
+        sendwar(currentWar)
         currentWar=null
     }
 }, (1000));
@@ -77,12 +82,20 @@ function setInterval(wrapped, timeout) {
 }
 
 function Finish(territory) {
-    if (!currentWar) return
+    if (!currentWar) {
+        // Chat.log("not in a war")
+        return
+    }
     if (currentWar.Territory==territory) {
-        Chat.log(`marked war ${currentWar.Territory} as finished instant`)
-        Chat.log(currentWar)
+        sendwar(currentWar)
         currentWar = null
     }
 }
 
-module.exports = { War, Finish, markBonus, queue}
+function finishforce() {
+    if (!currentWar) return
+    sendwar(currentWar)
+    currentWar = null
+}
+
+module.exports = { War, Finish, markBonus, queue, finishforce}

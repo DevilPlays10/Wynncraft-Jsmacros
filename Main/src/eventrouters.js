@@ -1,17 +1,29 @@
 const MapGMembers = require('./process/MapGuildMembers.js')
-const {War, Finish, markBonus, queue} = require('./process/Wars.js')
+const {War, Finish, markBonus, queue, finishforce} = require('./process/Wars.js')
 
 JsMacros.on("ContainerUpdate", JavaWrapper.methodToJava((evt) => {
     MapGMembers(evt)
 }))
 
+// simulate("[DEU] Herb Cave Tower - ❤ 974999 (62.5%) - ☠ 2340-3509 (0.75x)")
+
+// function simulate(msg) {
+//     Chat.log(msg)
+//     const match = msg.matchAll(/\[(\w{1,4})\] ([\w' ]+) Tower - ❤ (\d+) \((\d{2}.\d%)\) - ☠ (\d+-\d+) \((\d\.\d{1,2}x)\)/g)
+//     for (const m of match) War(m)
+//     Time.sleep(1000)
+//     finishforce()
+// }
 
 JsMacros.on("Bossbar", JavaWrapper.methodToJava((evt) => {
     const name = evt.bossBar?.getName().toJson()
     if (!name) return
-    const name_ = (name?.text? name.text: name).replace(/Â§/g, "§").replace(/§./g, "").replace(/[â¤˜]/g, '')
-    const match = name_.matchAll(/\[(\w{1,4})\] ([\w ]+) Tower - ❤ (\d+) \((\d{2}.\d%)\) - ☠ (\d+-\d+) \((\d\.\dx)\)/g)
+    const name_ = (name?.text? name.text: name).replace(/Â§/g, "§").replace(/§./g, "").replace(/[â¤˜"\\]/g, '')
+    const match = name_.matchAll(/\[(\w{1,4})\] ([\w' ]+) Tower - ❤ (\d+) \((\d{2}.\d%)\) - ☠ (\d+-\d+) \((\d\.\d{1,2}x)\)/g)
     for (const m of match) War(m)
+        let File = FS.open(`../storage/test/${current_date}.txt`)
+    //Chat.log(main)
+    File.append(JSON.stringify(name_)+'\n\n');
 }))
 
 const current_date = new Date().getTime()
@@ -23,10 +35,7 @@ JsMacros.on("RecvMessage", JavaWrapper.methodToJava((evt) => {
     if (!txt) return
     if (txt.match(/(?<=You have taken control of )(.+?)(?= from \[)/)) Finish(txt.match(/(?<=You have taken control of )(.+?)(?= from \[)/)[0])
     if (txt.match(/(?<=The war for )(.+?)(?= will start in)/)&&txt.endsWith(" minutes.")) queue(txt.match(/(?<=The war for )(.+?)(?= will start in)/)[0])
-    
-        let File = FS.open(`../storage/test/${current_date}.txt`)
-        //Chat.log(main)
-        File.append(JSON.stringify(txt)+'\n\n');
+    if (txt.startsWith("You have died at ")) finishforce()
   })
 );
 
@@ -38,3 +47,12 @@ JsMacros.on("Sound", JavaWrapper.methodToJava((evt) => {
     //     //Chat.log(main)
     //     File.append(JSON.stringify(str)+'\n\n');
 }))
+
+JsMacros.on("DimensionChange", JavaWrapper.methodToJava((evt) => {
+    finishforce()
+}))
+
+// JsMacros.on("Death", JavaWrapper.methodToJava((evt) => {
+//     // finishforce()
+//     Chat.log(evt)
+// })) //fuck you wynncraft
