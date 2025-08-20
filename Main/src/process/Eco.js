@@ -2,9 +2,27 @@ const [aura, volley] = [[0, 24, 18, 12], [0, 20, 15, 10]]
 const upgrades = {
     attack: [0.5, 0.75, 1, 1.25, 1.6, 2, 2.5, 3, 3.6, 3.8, 4.2, 4.7],
     defence: [10, 40, 55, 62.5, 70, 75, 79, 82, 84, 86, 88, 90],
-    damage: [1000, 1400, 1800, 2200, 2600, 3000, 3400, 3800, 4200, 4600, 5000, 5400],
+    damage: [ 1000, 1400, 1800, 2200, 2600, 3000, 3400, 3800, 4200, 4600, 5000, 5400 ],
     health: [ 300000, 450000, 600000, 750000, 960000, 1200000, 1500000, 1860000, 2220000, 2580000, 2940000, 3300000]
 }
+
+const defCalc = {
+    normal: {
+        "Very Low": [0, 5],
+        "Low": [6, 18],
+        "Medium": [19, 30],
+        "High": [31, 48],
+        "Very High": [49, Infinity]
+    },
+    hq: {
+        "Low": [0, 5],
+        "Medium": [6, 18],
+        "High": [19, 30],
+        "Very High": [31, Infinity],
+    }
+}
+
+const {pushToLogs} = require('../main')
 
 let sessionwar=0
 
@@ -38,17 +56,26 @@ class War {
             health: upgrades.health.indexOf(roundnear(upgrades.health, Number(this.tower.base.health/this.meta.multiplier))),
             defence: upgrades.defence.indexOf( Number(war.defence.replace(/[%]/g, '')) ),
         }
+        this.meta.eMultiplier=(Object.values(this.upgrades).reduce((a, c)=>a+c,0)) + (this.bonuses.aura? this.bonuses.aura+5:0) + (this.bonuses.volley? this.bonuses.volley+3:0)
+        this.def = {
+            MapDef: war.mapdef??'N/A',
+            CalcDef: Object.entries(this.warPDetails.HQ? defCalc.hq:defCalc.normal).filter(ent=>{
+                if (this.meta.eMultiplier>=ent[1][0]&&this.meta.eMultiplier<=ent[1][1]) return true
+            })[0][0]??"N/A"
+        }
     }
 }
 
 function CWar(war) {
     sessionwar++
     const bt = new War(war)
+    pushToLogs('wars.log', {[`${bt.warPDetails.HQ? 'HQ War': 'War'} ${sessionwar}`]: bt})
     const str = [
         `${bt.warPDetails.HQ? `HQ War`: `War`}: #${sessionwar}`,
         '',
         `Territory: ${bt.meta.terr}`,
         `Guild: ${bt.meta.guild}`,
+        `${bt.warPDetails.HQ? `Cons(Ext): ${bt.meta.cons}(${bt.meta.externals??0})`: `Cons: ${bt.meta.cons}`}`,
         `Duration: ${bt.warPDetails.duration}s`,
         `DPS: ${smol(bt.warPDetails.avgDPS)}`,
         '',
@@ -65,6 +92,8 @@ function CWar(war) {
         `- DEF: ${bt.tower.base.defence}%`,
         '',
         'Eco:',
+        `- WynnDefence: ${bt.def.MapDef}`,
+        `- CalcDefence: ${bt.def.CalcDef}`,
         `- Upgrades: ${bt.upgrades.dmg}-${bt.upgrades.attack}-${bt.upgrades.health}-${bt.upgrades.defence}`,
         `- Bonuses: 0-0-${bt.bonuses.aura}-${bt.bonuses.volley}`,
     ]
@@ -94,7 +123,7 @@ function rounddownarr(num, allowed) {
 }
 
 function smol(num) {
-    if (num<10000) return num.toFixed(0)
+    if (num<10000) return Number(num)
     if (num>10000&&num<1000000) return Number((num/1000).toFixed(1))+"K"
     if (num>1000000) return Number((num/1000000).toFixed(1))+"M"
 }

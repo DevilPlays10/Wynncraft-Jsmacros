@@ -1,6 +1,6 @@
 let currentWar;
 
-const {getTerData, getMapHQS, getExternals} = require('./Territories.js')
+const {getTerData, getMapHQS, getExternals, getMapDef} = require('./Territories.js')
 const {CWar:sendwar} = require('./Eco')
 
 // Chat.log(getTerData('Ancient Excavation'))
@@ -13,7 +13,8 @@ function queue(ter) {
     queued[ter] = {
         hq: getMapHQS().includes(ter),
         ext: getExternals(ter).length,
-        data: getTerData(ter)
+        data: getTerData(ter),
+        mapdef: getMapDef(ter)
     }
 }
 
@@ -35,6 +36,7 @@ function War(data) {
             EndDMG: data[5],
             HQ: hq,
             externals: hq? queued[data[2]]? queued[data[2]].ext : getExternals(data[2]).length: null,
+            mapdef: queued[data[2]]?.mapdef? queued[data[2]].mapdef : getMapDef(data[2])
         }
         if (queued[data[2]]) delete queued[data[2]]
     } else {

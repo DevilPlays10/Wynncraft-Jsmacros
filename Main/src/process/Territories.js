@@ -33,6 +33,15 @@ function getTerData(name) { //cons
     return null
 }
 
+function getMapDef(name) {
+    const terr = Client.getMinecraft().method_1562().method_2869().method_53814().method_53693();
+    const list = terr.stream().filter(e=>e.method_53647().comp_1913().get().method_811().method_54160().trim()==name).map(e=>e.method_53647().comp_1913().get().method_817().method_54160()).toList()
+    for (ent of list[0].split('\n')) if (ent.split(':')[0].includes('Territory Defences')) return (ent.split(':')[1]).match(/very low|low|medium|high|very high/gi)[0]
+    return null
+}
+
+// description = explode.method_53647().comp_1913().get().method_817(); //it is a Text so u neeed to method_54160 Text.getLiteralString()
+
 function getMapHQS() {
     const terr = Client.getMinecraft().method_1562().method_2869().method_53814().method_53693();
     const hq = terr.stream().filter(e => e.method_53647().comp_1913().get().method_815() == AdvancementFrame.field_1250).map(e=>e.method_53647().comp_1913().get().method_811().method_54160()).toList()
@@ -53,4 +62,4 @@ setInterval(() => {
     updateTerritories()
 }, 1000*10);
 
-module.exports = {getTerData, getMapHQS, getExternals}
+module.exports = {getTerData, getMapHQS, getExternals, getMapDef}
