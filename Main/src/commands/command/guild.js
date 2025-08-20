@@ -18,8 +18,10 @@ module.exports = name=> {
             if (online.length) {
                 msg.append(`\n${rank.toUpperCase()} (${online.length}):\n`).withColor(76, 120, 210)
                 // online.map(ent=>`${ent[0]} [${ent[1].server}] ${checkCD(ent[1].joined)? `(CD)`: ''}`)
-                online.forEach(ent=>{
-                    msg.append(`${ent[0]}, `)
+                online.forEach((ent, i)=>{
+                    // Chat.log(online.length)
+                    // Chat.log(i)
+                    msg.append(i+1==online.length? `${ent[0]}`: `${ent[0]}, `)
                     .withShowTextHover(Chat.createTextBuilder()
                         .append(`Server: ${ent[1].server}\nJoined: ${timer(ent[1].joined)} ago\n\nClick to message`)
                         .build()

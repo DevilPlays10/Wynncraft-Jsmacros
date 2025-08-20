@@ -6,7 +6,6 @@ JsMacros.on("ContainerUpdate", JavaWrapper.methodToJava((evt) => {
 }))
 
 // simulate("[DEU] Herb Cave Tower - ❤ 974999 (62.5%) - ☠ 2340-3509 (0.75x)")
-
 // function simulate(msg) {
 //     Chat.log(msg)
 //     const match = msg.matchAll(/\[(\w{1,4})\] ([\w' ]+) Tower - ❤ (\d+) \((\d{2}.\d%)\) - ☠ (\d+-\d+) \((\d\.\d{1,2}x)\)/g)
@@ -21,14 +20,7 @@ JsMacros.on("Bossbar", JavaWrapper.methodToJava((evt) => {
     const name_ = (name?.text? name.text: name).replace(/Â§/g, "§").replace(/§./g, "").replace(/[â¤˜"\\]/g, '')
     const match = name_.matchAll(/\[(\w{1,4})\] ([\w' ]+) Tower - ❤ (\d+) \((\d{2}.\d%)\) - ☠ (\d+-\d+) \((\d\.\d{1,2}x)\)/g)
     for (const m of match) War(m)
-        let File = FS.open(`../storage/test/${current_date}.txt`)
-    //Chat.log(main)
-    File.append(JSON.stringify(name_)+'\n\n');
 }))
-
-const current_date = new Date().getTime()
-FS.createFile(`../storage/test`, `${current_date}.txt`)
-FS.createFile(`../storage/test`, `${current_date}Sound.txt`)
 
 JsMacros.on("RecvMessage", JavaWrapper.methodToJava((evt) => {
     const txt = evt.text.getString()
