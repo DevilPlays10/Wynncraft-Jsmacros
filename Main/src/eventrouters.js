@@ -1,8 +1,9 @@
 const MapGMembers = require('./process/MapGuildMembers.js')
 const {War, Finish, markBonus, queue, finishforce} = require('./process/Wars.js')
 
+const {conf} = JSON.parse((FS.open('../storage/config.json', 'utf-8')).read())
 JsMacros.on("ContainerUpdate", JavaWrapper.methodToJava((evt) => {
-    MapGMembers(evt)
+    if (conf.MapMembersEnabled) MapGMembers(evt)
 }))
 
 // simulate("[DEU] Herb Cave Tower - ❤ 974999 (62.5%) - ☠ 2340-3509 (0.75x)")
@@ -19,7 +20,7 @@ JsMacros.on("Bossbar", JavaWrapper.methodToJava((evt) => {
     if (!name) return
     const name_ = (name?.text? name.text: name).replace(/Â§/g, "§").replace(/§./g, "").replace(/[â¤˜"\\]/g, '')
     const match = name_.matchAll(/\[(\w{1,4})\] ([\w' ]+) Tower - ❤ (\d+) \((\d{2}.\d%)\) - ☠ (\d+-\d+) \((\d\.\d{1,2}x)\)/g)
-    for (const m of match) War(m)
+    for (const m of match) if (conf.LogWarsEnabled) War(m)
 }))
 
 JsMacros.on("RecvMessage", JavaWrapper.methodToJava((evt) => {

@@ -1,9 +1,9 @@
 const guildCMD = require('./command/guild.js')
 
-const names = JSON.parse((FS.open('../storage/commands/names.json', 'utf-8')).read())
+const {conf} = JSON.parse((FS.open('../storage/config.json', 'utf-8')).read())
 
 const commands = [
-    Chat.createCommandBuilder(names.guildCommand).greedyStringArg('name').executes(JavaWrapper.methodToJavaAsync((ent)=>{
+    conf.guildCommandEnabled? Chat.createCommandBuilder(conf.guildCommandName).greedyStringArg('name').executes(JavaWrapper.methodToJavaAsync((ent)=>{
         const name = ent.getArg('name')
         if (name.match(/[^a-zA-Z ]/g)) {
             Chat.log(Chat.createTextBuilder()
@@ -20,10 +20,10 @@ const commands = [
         ) 
         guildCMD(name) //idk how to use await with this and return true within 300ms so this works of rnow
         return true
-    }))
+    })): null
 ]
 
-commands.forEach(ent=>ent.register())
+commands.filter(ent=>ent).forEach(ent=>ent.register())
 event.stopListener = JavaWrapper.methodToJava(() => {
     commands.forEach(ent=>ent.unregister())
 });

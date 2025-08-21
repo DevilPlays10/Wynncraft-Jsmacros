@@ -1,9 +1,15 @@
 {
-    "version": "0.2 beta",
+    "version": "1.02 release",
     "urls": {
         "wyn": "https://api.wynncraft.com/v3"
     },
     "tokens": {
         "wyn": null
+    },
+    "conf": {
+        "guildCommandEnabled": true,
+        "guildCommandName": "lg",
+        "MapMembersEnabled": false,
+        "LogWarsEnabled": true
     }
 }

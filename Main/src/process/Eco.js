@@ -6,6 +6,22 @@ const upgrades = {
     health: [ 300000, 450000, 600000, 750000, 960000, 1200000, 1500000, 1860000, 2220000, 2580000, 2940000, 3300000]
 }
 
+const c = {
+    none: [252, 252, 252],
+    text: [93, 226, 231],
+    num: [204, 108, 231],
+    textRes: [254, 153, 0],
+    num2: [129, 38, 155],
+    spec: [57, 150, 153],
+    defs: {
+        "Very Low": [72, 140, 63],
+        "Low": [126, 255, 109],
+        "Medium": [255, 238, 126],
+        "High": [255, 238, 126],
+        "Very High": [191, 0, 0]
+    }
+}
+
 const defCalc = {
     normal: {
         "Very Low": [0, 5],
@@ -42,8 +58,8 @@ class War {
             EHP: war.EndHP //this is end hp NOT eeffeicenve hp, effive hp is SEHP or EEHP
         }
         this.warPDetails = {
-            duration: war.duration,
-            avgDPS: Number(((this.tower.Sehp-this.tower.Eehp)/war.duration).toFixed(0)),
+            duration: war.duration??0,
+            avgDPS: Number(((this.tower.Sehp-this.tower.Eehp)/war.duration).toFixed(0))??0,
             HQ: war.HQ
         }
         this.bonuses = {
@@ -70,41 +86,121 @@ function CWar(war) {
     sessionwar++
     const bt = new War(war)
     pushToLogs('wars.log', {[`${bt.warPDetails.HQ? 'HQ War': 'War'} ${sessionwar}`]: bt})
-    const str = [
-        `${bt.warPDetails.HQ? `HQ War`: `War`}: #${sessionwar}`,
-        '',
-        `Territory: ${bt.meta.terr}`,
+    const str_ = [
+        [
+            [`${bt.warPDetails.HQ? `HQ War`: `War`}`, c.text],
+            [` #${sessionwar}\n`, c.num]
+        ],
+        [
+            ['Territory:', c.text],
+            [` ${bt.meta.terr}`, c.textRes]
+        ],
+        [
+            ['Guild:', c.text],
+            [` ${bt.meta.guild}`, c.textRes]
+        ],
+        [
+            [(bt.warPDetails.HQ? `Cons(Ext): `: `Cons: `), c.text],
+            [(bt.warPDetails.HQ?`${bt.meta.cons}(${bt.meta.externals??0})`: bt.meta.cons), c.num]
+        ],
+        [
+            [`Duration: `, c.text],
+            [`${bt.warPDetails.duration}s`, c.num]
+        ],
+        [
+            [`DPS: `, c.text],
+            [`${smol(bt.warPDetails.avgDPS)}\n`, c.num]
+        ],
+        [
+            [`InitialStats:\n`, c.textRes],
+            [`- DMG: `, c.text],
+            [`${bt.tower.base.dmg.min}-${bt.tower.base.dmg.max}`, c.num],
+            [` (${smol(bt.tower.Sdps[0])}-${smol(bt.tower.Sdps[1])} DPS)\n`, c.num2],
+            [`- ATK: `, c.text],
+            [`${bt.tower.base.attack}`, c.num],
+            [`x\n`, c.spec],
+            [`- HP: `, c.text],
+            [`${smol(bt.tower.base.health)}`, c.num],
+            [` (${smol(bt.tower.Sehp)} EHP)\n`, c.num2],
+            [`- DEF: `, c.text], 
+            [`${bt.tower.base.defence}`, c.num],
+            [`%\n`, c.spec],
+        ],
+        [
+            [`FinalStats:\n`, c.textRes],
+            [`- DMG: `, c.text],
+            [`${bt.tower.EDmg}`, c.num],
+            [` (${smol(bt.tower.Edps[0])}-${smol(bt.tower.Edps[1])} DPS)\n`, c.num2],
+            [`- ATK: `, c.text],
+            [`${bt.tower.base.attack}`, c.num],
+            [`x\n`, c.spec],
+            [`- HP: `, c.text],
+            [`${smol(bt.tower.EHP)}`, c.num],
+            [` (${smol(bt.tower.Eehp)} EHP)\n`, c.num2],
+            [`- DEF: `, c.text], 
+            [`${bt.tower.base.defence}`, c.num],
+            [`%\n`, c.spec],
+        ],
+        [
+            [`Eco:\n`, c.textRes],
+            [`- WynnDef: `, c.text],
+            [`${bt.def.MapDef}\n`, c.defs[bt.def.MapDef]??c.none],
+            [`- CalcDef: `, c.text],
+            [`${bt.def.CalcDef}\n`, c.defs[bt.def.CalcDef]??c.none],
+            [`- Upgrades: `, c.text],
+            [`${bt.upgrades.dmg}-${bt.upgrades.attack}-${bt.upgrades.health}-${bt.upgrades.defence}\n`, c.num],
+            [`- Bonuses: `, c.text],
+            [`0-0-${bt.bonuses.aura}-${bt.bonuses.volley}\n`, c.num]
+        ],
+        [
+            [`Click to copy`, c.none]
+        ]
+    ]
+    const strCOPY = [
+        '```ex',
+        `Territory: ${bt.meta.terr} ${bt.warPDetails.HQ? `(HQ)`: ''}`,
         `Guild: ${bt.meta.guild}`,
         `${bt.warPDetails.HQ? `Cons(Ext): ${bt.meta.cons}(${bt.meta.externals??0})`: `Cons: ${bt.meta.cons}`}`,
         `Duration: ${bt.warPDetails.duration}s`,
         `DPS: ${smol(bt.warPDetails.avgDPS)}`,
-        '',
+        ``,
         `InitialStats:`,
         `- DMG: ${bt.tower.base.dmg.min}-${bt.tower.base.dmg.max} (${smol(bt.tower.Sdps[0])}-${smol(bt.tower.Sdps[1])} DPS)`,
         `- ATK: ${bt.tower.base.attack}x`,
         `- HP: ${smol(bt.tower.base.health)} (${smol(bt.tower.Sehp)} EHP)`,
         `- DEF: ${bt.tower.base.defence}%`,
-        '', 
+        ``,
         `FinalStats:`,
-        `- DMG: ${bt.tower.EDmg} (${smol(bt.tower.Edps[0])}-${smol(bt.tower.Edps[1])} DPS)`,
+        `- DMG: ${bt.tower.Edps} (${smol(bt.tower.Edps[0])}-${smol(bt.tower.Edps[1])} DPS)`,
         `- ATK: ${bt.tower.base.attack}x`,
         `- HP: ${smol(bt.tower.EHP)} (${smol(bt.tower.Eehp)} EHP)`,
         `- DEF: ${bt.tower.base.defence}%`,
-        '',
-        'Eco:',
-        `- WynnDefence: ${bt.def.MapDef}`,
-        `- CalcDefence: ${bt.def.CalcDef}`,
+        ``,
+        `Eco:`,
+        `- WynDef: ${bt.def.MapDef}`,
+        `- CalcDef: ${bt.def.CalcDef}`,
         `- Upgrades: ${bt.upgrades.dmg}-${bt.upgrades.attack}-${bt.upgrades.health}-${bt.upgrades.defence}`,
         `- Bonuses: 0-0-${bt.bonuses.aura}-${bt.bonuses.volley}`,
+        '```'
     ]
+    const cbbuilderInsider = Chat.createTextBuilder()
+    for (string of str_) {
+        //stfu thso works and i wil not touch this
+        if (str_.indexOf(string)!==0) cbbuilderInsider.append('\n')
+        for (string2 of string) {
+            if (!string2[1]) {
+                cbbuilderInsider.append(string2[0])
+            } else cbbuilderInsider.append(string2[0]).withColor(...string2[1])
+        }
+    }
     Chat.log(Chat.createTextBuilder()
         .append('[War] ').withColor(210, 1, 3)
         .append(`${bt.meta.terr} taken from `)
         .append(bt.meta.guild).withColor(106, 104, 186)
         .append(`\n- Time: ${bt.warPDetails.duration}s `)
         .append(`View More`).withColor(125, 218, 88).withFormatting(true, false, false, false, false).withShowTextHover(
-            Chat.createTextBuilder().append([...str, '', 'Click to copy'].join('\n')).build()
-        ).withClickEvent(`copy_to_clipboard`, str.join('\n'))
+            cbbuilderInsider.build()
+        ).withClickEvent(`copy_to_clipboard`, strCOPY.join('\n'))
     )
 }
 
