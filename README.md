@@ -1,2 +1,2 @@
 # Wynncraft-Jsmacros
-Wynncraft creations for JSMacros
+Jsmacros creations for Wynncraft
