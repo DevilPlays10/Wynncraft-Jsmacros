@@ -24,7 +24,7 @@ JsMacros.on("Bossbar", JavaWrapper.methodToJava((evt) => {
 }))
 
 JsMacros.on("RecvMessage", JavaWrapper.methodToJava((evt) => {
-    const txt = evt.text.getString()
+    const txt = evt.text.getString().replace(/󏿼󐀆/g, '').replace(/\n/g, '')
     if (!txt) return
     if (txt.match(/(?<=You have taken control of )(.+?)(?= from \[)/)) Finish(txt.match(/(?<=You have taken control of )(.+?)(?= from \[)/)[0])
     if (txt.match(/(?<=The war for )(.+?)(?= will start in)/)&&txt.endsWith(" minutes.")) queue(txt.match(/(?<=The war for )(.+?)(?= will start in)/)[0])
