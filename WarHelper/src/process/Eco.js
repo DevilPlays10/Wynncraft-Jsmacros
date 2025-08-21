@@ -171,7 +171,7 @@ function CWar(war) {
         `- DEF: ${bt.tower.base.defence}%`,
         ``,
         `FinalStats:`,
-        `- DMG: ${bt.tower.Edps} (${smol(bt.tower.Edps[0])}-${smol(bt.tower.Edps[1])} DPS)`,
+        `- DMG: ${bt.tower.EDmg} (${smol(bt.tower.Edps[0])}-${smol(bt.tower.Edps[1])} DPS)`,
         `- ATK: ${bt.tower.base.attack}x`,
         `- HP: ${smol(bt.tower.EHP)} (${smol(bt.tower.Eehp)} EHP)`,
         `- DEF: ${bt.tower.base.defence}%`,
