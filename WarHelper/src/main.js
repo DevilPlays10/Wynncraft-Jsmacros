@@ -11,4 +11,6 @@ function pushToLogs(file, msg) {
     File.append(`${JSON.stringify(msg)},\n`)
 }
 
+//made by devivel, ofc cant forget this
+
 module.exports = { pushToLogs }
