@@ -10,6 +10,9 @@
         "guildCommandEnabled": true,
         "guildCommandName": "lg",
         "MapMembersEnabled": false,
-        "LogWarsEnabled": true
+        "LogWarsEnabled": true,
+        "AutoStartWarOnMenuDefence": "High",
+        "AutoStartWarOnMenuAcceptablePrice": 8000,
+        "AutoStartWarOnFFA_ONLY": true
     }
 }
