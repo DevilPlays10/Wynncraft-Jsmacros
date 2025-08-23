@@ -1,0 +1,38 @@
+{
+    "rol": [
+        "Azure Frontier",
+        "Path to Light",
+        "Nexus of Light",
+        "Primal Fen",
+        "Field of Life",
+        "Otherworldly Monolith",
+        "Heavenly Ingress",
+        "Luminous Plateau"
+    ],
+    "cotl": [
+        "Big Mushroom Cave",
+        "Paper Trail",
+        "Waterfall Cave",
+        "Pine Pillar Forest",
+        "Timeworn Arch",
+        "Evergreen Outbreak",
+        "Burning Farm"
+    ],
+    "lf": [
+        "Guardian of the Forest",
+        "Collapsed Bridge",
+        "Unicorn Trail",
+        "Dodegar's Forge",
+        "Mycelial Expanse"
+    ],
+    "jng": [
+        "Apprentice Huts",
+        "Iboju Village",
+        "Herb Cave",
+        "Troms Lake",
+        "Jungle Entrance",
+        "Delnar Manor",
+        "Fountain of Youth",
+        "Entamis Village"
+    ]
+}
