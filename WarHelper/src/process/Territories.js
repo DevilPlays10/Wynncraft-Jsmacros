@@ -1,5 +1,6 @@
 const { WynGET } = require('../functions')
-const Map = JSON.parse((FS.open('../storage/Consmap.json', 'utf-8')).read())
+const Map = JSON.parse((FS.open('../storage/territories/Consmap.json', 'utf-8')).read())
+const Ffa =JSON.parse((FS.open('../storage/territories/Ffa.json', 'utf-8')).read())
 const AdvancementFrame  = Java.type("net.minecraft.class_189")
 
 let terrs;
@@ -42,6 +43,10 @@ function getMapDef(name) {
 
 // description = explode.method_53647().comp_1913().get().method_817(); //it is a Text so u neeed to method_54160 Text.getLiteralString()
 
+function isFFA(terr) {
+    return Object.values(Ffa).flat(1).includes(terr)
+}
+
 function getMapHQS() {
     const terr = Client.getMinecraft().method_1562().method_2869().method_53814().method_53693();
     const hq = terr.stream().filter(e => e.method_53647().comp_1913().get().method_815() == AdvancementFrame.field_1250).map(e=>e.method_53647().comp_1913().get().method_811().method_54160()).toList()
@@ -62,4 +67,4 @@ setInterval(() => {
     updateTerritories()
 }, 1000*10);
 
-module.exports = {getTerData, getMapHQS, getExternals, getMapDef}
+module.exports = {getTerData, getMapHQS, getExternals, getMapDef, isFFA}

@@ -1,8 +1,11 @@
 const MapGMembers = require('./process/MapGuildMembers.js')
 const {War, Finish, markBonus, queue, finishforce} = require('./process/Wars.js')
+const {warmenu} = require('./process/Wars2orsmt.js')
 
 const {conf} = JSON.parse((FS.open('../storage/config.json', 'utf-8')).read())
+
 JsMacros.on("ContainerUpdate", JavaWrapper.methodToJava((evt) => {
+    warmenu(evt, conf)
     if (conf.MapMembersEnabled) MapGMembers(evt)
 }))
 
