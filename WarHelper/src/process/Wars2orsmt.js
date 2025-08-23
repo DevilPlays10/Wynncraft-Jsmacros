@@ -1,0 +1,36 @@
+const {isFFA} = require('./Territories.js')
+
+const defs = {
+    "very low": ["very low"],
+    "low": ["low", "very low"],
+    "medium": ["medium", "low", "very low"],
+    "high": ["high", "medium", "low", "very low"],
+    "very high": ["very high", "high", "medium", "low", "very low"]
+}
+
+function warmenu(e, conf) {
+    const name = e.screen?.getTitleText()?.getString()
+    if (!name.startsWith('Attacking: ')) return
+    // Chat.log(e.screen)
+    // // for (let i = 1; i <= e.inventory.getTotalSlots(); i++) {
+    // //     Chat.log(e.inventory.getSlot(i))
+    // //     Chat.log(`count: ${i}`)
+    // // }
+    Time.sleep(250)
+    const slot = e.inventory.getSlot(13).getLore()
+    if (slot[0].getString().includes('Calculating route')) return
+    const defence = (slot[0].getString().split(':')[1]).match(/very low|low|medium|high|very high/gi)[0].toLowerCase()
+    const cost = (slot[slot.length-2]).getString().match(/(\d+)$/g)[0]
+    const terr = slot[slot.length-4].getString().match(/(?<=§e✔ §f)(.*)(?=§7 )/g, '')[0]
+    //autostart
+    if (Object.getOwnPropertyNames(defs).includes(conf.AutoStartWarOnMenuDefence.toLowerCase()) &&defs[conf.AutoStartWarOnMenuDefence.toLowerCase()].includes(defence) &&conf.AutoStartWarOnMenuAcceptablePrice>=cost) {
+        if (conf.AutoStartWarOnFFA_ONLY&&!isFFA(terr)) return 
+        e.inventory.click(13)
+        Chat.log(Chat.createTextBuilder()
+            .append('[War] ').withColor(210, 1, 3)
+            .append(`Queued ${isFFA? `FFA `: ''}as ${defence} with ${cost} emeralds`)
+        )
+    }
+}
+
+module.exports = { warmenu }
