@@ -17,7 +17,7 @@ const c = {
         "Very Low": [72, 140, 63],
         "Low": [126, 255, 109],
         "Medium": [255, 238, 126],
-        "High": [255, 238, 126],
+        "High": [255, 85, 85],
         "Very High": [191, 0, 0]
     }
 }
@@ -50,9 +50,9 @@ class War {
         this.meta = {guild: war.Guild, cons: war.Cons, terr: war.Territory, externals: war.externals, multiplier: war.HQ? (1+(0.3*war.Cons))*(1+(0.5+0.25*(war.Cons+war.externals))): (1+(0.3*war.Cons))}
         this.tower = {
             base: {dmg: {min: dmg[0], max: dmg[1]}, attack, health: war.StartHP, defence: war.defence.replace(/[%]/g, '')},
-            Sdps: [Number(dmg[0]*attack), Number(dmg[1]*attack)],
+            Sdps: [(dmg[0]*attack).toFixed(), (dmg[1]*attack).toFixed()],
             Sehp: Number(war.StartHP / (1-(war.defence.replace(/[%]/g, '')/100))).toFixed(1),
-            Edps: [Number(endDmg[0]*attack), Number(endDmg[1]*attack)],
+            Edps: [(endDmg[0]*attack).toFixed(), (endDmg[1]*attack).toFixed()],
             Eehp: Number(war.EndHP / (1-(war.defence.replace(/[%]/g, '')/100))).toFixed(1),
             EDmg: endDmg[0]+'-'+endDmg[1],
             EHP: war.EndHP //this is end hp NOT eeffeicenve hp, effive hp is SEHP or EEHP
