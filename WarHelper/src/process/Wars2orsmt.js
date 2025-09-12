@@ -32,7 +32,7 @@ function warmenu(e, conf) {
     // Chat.log(terr)
     // Chat.log(isFFA(terr))
     //autostart
-    if (Object.getOwnPropertyNames(defs).includes(conf.AutoStartWarOnMenuDefence.toLowerCase()) &&defs[conf.AutoStartWarOnMenuDefence.toLowerCase()].includes(defence) &&conf.AutoStartWarOnMenuAcceptablePrice>=cost) {
+    if (conf.AutoStartWarOnMenuDefence) if (Object.getOwnPropertyNames(defs).includes(conf.AutoStartWarOnMenuDefence.toLowerCase()) &&defs[conf.AutoStartWarOnMenuDefence.toLowerCase()].includes(defence) &&conf.AutoStartWarOnMenuAcceptablePrice>=cost) {
         if (conf.AutoStartWarOnFFA_ONLY&&!isFFA(terr)) return 
         e.inventory.click(13)
         Chat.log(Chat.createTextBuilder()
