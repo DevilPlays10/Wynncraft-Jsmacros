@@ -30,8 +30,8 @@ function War(data) {
             defence: data[4],
             StartDMG: data[5],
             attack: data[6],
-            time: (new Date()/1000).toFixed(),
-            endtime: (new Date()/1000).toFixed(),
+            time: new Date().getTime(),
+            endtime: new Date().getTime(),
             EndHP: data[3],
             EndDMG: data[5],
             HQ: hq,
@@ -40,7 +40,7 @@ function War(data) {
         }
         if (queued[data[2]]) delete queued[data[2]]
     } else {
-        currentWar.endtime = (new Date()/1000).toFixed()
+        currentWar.endtime = new Date().getTime(),
         currentWar.EndHP = data[3],
         currentWar.EndDMG = data[5],
         currentWar.duration = currentWar.endtime-currentWar.time

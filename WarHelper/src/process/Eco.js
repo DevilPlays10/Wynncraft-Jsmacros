@@ -58,8 +58,8 @@ class War {
             EHP: war.EndHP //this is end hp NOT eeffeicenve hp, effive hp is SEHP or EEHP
         }
         this.warPDetails = {
-            duration: war.duration??0,
-            avgDPS: Number(((this.tower.Sehp-this.tower.Eehp)/war.duration).toFixed(0))??0,
+            duration: (war.duration/1000).toFixed(1)??0,
+            avgDPS: Number(((this.tower.Sehp-this.tower.Eehp)/(war.duration/1000)).toFixed(0))??0,
             HQ: war.HQ
         }
         this.bonuses = {
