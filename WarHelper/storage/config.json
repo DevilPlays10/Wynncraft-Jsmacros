@@ -11,7 +11,7 @@
         "guildCommandName": "lg",
         "MapMembersEnabled": false,
         "LogWarsEnabled": true,
-        "AutoStartWarOnMenuDefence": "High",
+        "AutoStartWarOnMenuDefence": false,
         "AutoStartWarOnMenuAcceptablePrice": 8000,
         "AutoStartWarOnFFA_ONLY": true
     }
