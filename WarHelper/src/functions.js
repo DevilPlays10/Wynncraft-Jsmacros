@@ -16,5 +16,15 @@ function timer(val) { //ungracefully stolen from cmds/admin/profile
   return (`${days? `${days}d`: `${hours? `${hours.toFixed(0)}h`: `${minutes? `${minutes.toFixed(0)}m` : `0m`}`}` }`).trim()
 }
 
+function setInterval(wrapped, timeout) {
+    let cancel = {"cancelled": false}
+    JavaWrapper.methodToJavaAsync(() => {
+        while (!cancel.cancelled) {
+            Time.sleep(timeout);
+            wrapped();
+        }
+    }).run();
+    return cancel;
+}
 
-module.exports = { timer, WynGET }
+module.exports = { timer, WynGET, setInterval }

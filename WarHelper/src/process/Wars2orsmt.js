@@ -1,4 +1,4 @@
-const {isFFA} = require('./Territories.js')
+const {isFFA} = require('./ext/Territories.js')
 
 const defs = {
     "very low": ["very low"],

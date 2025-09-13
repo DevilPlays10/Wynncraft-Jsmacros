@@ -1,6 +1,6 @@
 let currentWar;
 
-const {getTerData, getMapHQS, getExternals, getMapDef} = require('./Territories.js')
+const {getTerData, getMapHQS, getExternals, getMapDef} = require('./ext/Territories.js')
 const {CWar:sendwar} = require('./Eco')
 
 // Chat.log(getTerData('Ancient Excavation'))

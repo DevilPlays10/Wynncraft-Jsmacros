@@ -1,5 +1,5 @@
 {
-    "version": "1.02 release",
+    "version": "1.04 release",
     "urls": {
         "wyn": "https://api.wynncraft.com/v3"
     },
@@ -12,7 +12,7 @@
         "MapMembersEnabled": false,
         "LogWarsEnabled": true,
         "AutoStartWarOnMenuDefence": false,
-        "AutoStartWarOnMenuAcceptablePrice": 8000,
-        "AutoStartWarOnFFA_ONLY": true
+        "AutoStartWarOnMenuAcceptablePrice": 0,
+        "AutoStartWarOnFFA_ONLY": false
     }
 }

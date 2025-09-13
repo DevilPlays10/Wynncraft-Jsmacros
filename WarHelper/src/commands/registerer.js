@@ -1,4 +1,5 @@
 const guildCMD = require('./command/guild.js')
+const { getGuildsSync } = require('../process/ext/Guilds')
 
 const {conf} = JSON.parse((FS.open('../storage/config.json', 'utf-8')).read())
 
@@ -20,7 +21,7 @@ const commands = [
         ) 
         guildCMD(name) //idk how to use await with this and return true within 300ms so this works of rnow
         return true
-    })): null
+    })).suggestMatching(getGuildsSync()?.flat(1)??[]): null
 ]
 
 commands.filter(ent=>ent).forEach(ent=>ent.register())

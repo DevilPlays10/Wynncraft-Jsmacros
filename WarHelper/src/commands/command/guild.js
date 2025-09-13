@@ -1,6 +1,13 @@
 const {WynGET, timer} = require('../../functions.js')
+const { getGuildsSync } = require('../../process/ext/Guilds')
 
-module.exports = name=> {
+module.exports = name => {
+
+    if (name.length<=4) {
+        const gsync = getGuildsSync()
+        if (!gsync.map(ent=>ent[1]).includes(name)) name = gsync.filter(ent=>ent[1].toLowerCase()==name.toLowerCase()).map(ent=>ent[1])[0]
+    }
+
     const response = WynGET((name.length<=4)? `/guild/prefix/${name}`: `/guild/${name}`)
     // Chat.log(response.responseCode)
     if (response.responseCode==200) {

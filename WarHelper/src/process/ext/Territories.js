@@ -1,6 +1,6 @@
-const { WynGET } = require('../functions')
+const { WynGET, setInterval } = require('../../functions')
 const Map = JSON.parse((FS.open('../storage/territories/Consmap.json', 'utf-8')).read())
-const Ffa =JSON.parse((FS.open('../storage/territories/Ffa.json', 'utf-8')).read())
+const Ffa = JSON.parse((FS.open('../storage/territories/Ffa.json', 'utf-8')).read())
 const AdvancementFrame  = Java.type("net.minecraft.class_189")
 
 let terrs;
@@ -9,17 +9,6 @@ function updateTerritories() {
     const res = WynGET(`/guild/list/territory`)
     if (res.responseCode!==200) return
     terrs = JSON.parse(res.text())
-}
-
-function setInterval(wrapped, timeout) {
-    let cancel = {"cancelled": false}
-    JavaWrapper.methodToJavaAsync(() => {
-        while (!cancel.cancelled) {
-            Time.sleep(timeout);
-            wrapped();
-        }
-    }).run();
-    return cancel;
 }
 
 function getTerData(name) { //cons
