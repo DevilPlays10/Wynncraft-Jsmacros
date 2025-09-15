@@ -1,4 +1,4 @@
-const MapGMembers = require('./process/MapGuildMembers.js')
+// const MapGMembers = require('./process/MapGuildMembers.js')
 const {War, Finish, markBonus, queue, finishforce} = require('./process/Wars.js')
 const {warmenu} = require('./process/Wars2orsmt.js')
 
@@ -9,11 +9,15 @@ JsMacros.on("ContainerUpdate", JavaWrapper.methodToJava((evt) => {
     if (conf.MapMembersEnabled) MapGMembers(evt)
 }))
 
-// simulate("[DEU] Herb Cave Tower - ❤ 974999 (62.5%) - ☠ 2340-3509 (0.75x)")
-// function simulate(msg) {
-//     Chat.log(msg)
-//     const match = msg.matchAll(/\[(\w{1,4})\] ([\w' ]+) Tower - ❤ (\d+) \((\d{2}.\d%)\) - ☠ (\d+-\d+) \((\d\.\d{1,2}x)\)/g)
+// const [a, b] = ['[DEU] Herb Cave Tower - ❤ 974999 (62.5%) - ☠ 2340-3509 (0.75x)', '[DEU] Herb Cave Tower - ❤ 24999 (62.5%) - ☠ 2340-3509 (0.75x)']
+
+// simulate()
+// function simulate() {
+//     const match = a.matchAll(/\[(\w{1,4})\] ([\w' ]+) Tower - ❤ (\d+) \((\d{2}.\d%)\) - ☠ (\d+-\d+) \((\d\.\d{1,2}x)\)/g)
 //     for (const m of match) War(m)
+//     Time.sleep(1000)
+//     for (const m of b.matchAll(/\[(\w{1,4})\] ([\w' ]+) Tower - ❤ (\d+) \((\d{2}.\d%)\) - ☠ (\d+-\d+) \((\d\.\d{1,2}x)\)/g)) War(m)
+
 //     Time.sleep(1000)
 //     finishforce()
 // }

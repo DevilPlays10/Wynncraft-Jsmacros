@@ -2,11 +2,11 @@ let currentWar;
 
 const {getTerData, getMapHQS, getExternals, getMapDef} = require('./ext/Territories.js')
 const {CWar:sendwar} = require('./Eco')
+// const { pushToLogs } = require('../main')
 
 // Chat.log(getTerData('Ancient Excavation'))
 // Chat.log(getExternals('Ancient Excavation'))
 // // Chat.log(getMapHQS())
-
 const queued = {}
 
 function queue(ter) {
@@ -17,6 +17,7 @@ function queue(ter) {
         mapdef: getMapDef(ter)
     }
 }
+
 
 function War(data) {
     if (!currentWar) {
@@ -40,11 +41,43 @@ function War(data) {
         }
         if (queued[data[2]]) delete queued[data[2]]
     } else {
+        if (!currentWar.players) {
+            const data = multihitDetec()
+            if (data) currentWar.players = data
+        }
         currentWar.endtime = new Date().getTime(),
         currentWar.EndHP = data[3],
         currentWar.EndDMG = data[5],
         currentWar.duration = currentWar.endtime-currentWar.time
     }
+}
+
+const regex = [/§4- \[[\d§A-Za-z\|]+\]§f §l(?<name>[a-zA-Z0-9_]+)§7/g, /§4- \[§c\|\|[0-9§]+\|\|§4\]§f (?<name>[a-zA-Z0-9_]+)§7/g] //targetted, all
+function multihitDetec() {
+    const final = {
+        targetted: [],
+        all: []
+    }
+    const score_ = World.getScoreboards()?.getCurrentScoreboard()?.getKnownPlayers()
+    if (!score_) return
+    const score = score_.join(',')
+    if (!score.match(regex[0])) return
+
+    for (const m of score.matchAll(regex[0])) if (!final.targetted.includes(m.groups.name)) final.targetted.push(m.groups.name)
+    for (const m of score.matchAll(regex[1])) if (!final.all.includes(m.groups.name)) final.all.push(m.groups.name)
+    return { targetted: removeNear(final.targetted), all: removeNear(final.all)}
+
+    function removeNear(arr) {
+        const result = [];
+
+        for (const item of arr) {
+            const start = result.find(r => item.startsWith(r));
+            if (!start) result.push(item);
+        }
+
+        return result;
+    }
+
 }
 
 let lastevt;

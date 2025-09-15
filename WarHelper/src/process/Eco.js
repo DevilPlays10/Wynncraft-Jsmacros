@@ -38,8 +38,6 @@ const defCalc = {
     }
 }
 
-const {pushToLogs} = require('../main')
-
 let sessionwar=0
 
 class War {
@@ -51,20 +49,23 @@ class War {
         this.tower = {
             base: {dmg: {min: dmg[0], max: dmg[1]}, attack, health: war.StartHP, defence: war.defence.replace(/[%]/g, '')},
             Sdps: [(dmg[0]*attack).toFixed(), (dmg[1]*attack).toFixed()],
-            Sehp: Number(war.StartHP / (1-(war.defence.replace(/[%]/g, '')/100))).toFixed(1),
+            Sehp: Number(war.StartHP / (1-(war.defence.replace(/[%]/g, '')/100))),
             Edps: [(endDmg[0]*attack).toFixed(), (endDmg[1]*attack).toFixed()],
-            Eehp: Number(war.EndHP / (1-(war.defence.replace(/[%]/g, '')/100))).toFixed(1),
+            Eehp: Number(war.EndHP / (1-(war.defence.replace(/[%]/g, '')/100))),
             EDmg: endDmg[0]+'-'+endDmg[1],
             EHP: war.EndHP //this is end hp NOT eeffeicenve hp, effive hp is SEHP or EEHP
         }
         this.warPDetails = {
             duration: (war.duration/1000).toFixed(1)??0,
             avgDPS: Number(((this.tower.Sehp-this.tower.Eehp)/(war.duration/1000)).toFixed(0))??0,
-            HQ: war.HQ
+            HQ: war.HQ,
+            members: war.players?.all?? ["N/A"],
+            percentage: (((this.tower.Sehp-this.tower.Eehp)/this.tower.Sehp)*100).toFixed(1)+"%"
         }
         this.bonuses = {
             aura: aura.indexOf(war.aura? rounddownarr(war.aura, [12, 18, 24]): 0),
-            volley: volley.indexOf(war.volley? rounddownarr(war.volley, [10, 15, 20]): 0)
+            volley: volley.indexOf(war.volley? rounddownarr(war.volley, [10, 15, 20]): 0),
+            multihit: war.players?.targetted?.length==2? 1: 0
         }
         this.upgrades = {
             dmg: upgrades.damage.indexOf(roundnear(upgrades.damage, Number(dmg[0]/this.meta.multiplier))),
@@ -109,7 +110,15 @@ function CWar(war) {
         ],
         [
             [`DPS: `, c.text],
-            [`${smol(bt.warPDetails.avgDPS)}\n`, c.num]
+            [`${smol(bt.warPDetails.avgDPS)}`, c.num]
+        ],
+        [
+            ['Progress: ', c.text],
+            [bt.warPDetails.percentage, c.num]
+        ],
+        [
+            ['Members: ', c.text],
+            [bt.warPDetails.members.join(', ')+'\n', c.textRes]
         ],
         [
             [`InitialStats:\n`, c.textRes],
@@ -150,7 +159,7 @@ function CWar(war) {
             [`- Upgrades: `, c.text],
             [`${bt.upgrades.dmg}-${bt.upgrades.attack}-${bt.upgrades.health}-${bt.upgrades.defence}\n`, c.num],
             [`- Bonuses: `, c.text],
-            [`0-0-${bt.bonuses.aura}-${bt.bonuses.volley}\n`, c.num]
+            [`0-${bt.bonuses.multihit}-${bt.bonuses.aura}-${bt.bonuses.volley}\n`, c.num]
         ],
         [
             [`Click to copy`, c.none]
@@ -163,6 +172,7 @@ function CWar(war) {
         `${bt.warPDetails.HQ? `Cons(Ext): ${bt.meta.cons}(${bt.meta.externals??0})`: `Cons: ${bt.meta.cons}`}`,
         `Duration: ${bt.warPDetails.duration}s`,
         `DPS: ${smol(bt.warPDetails.avgDPS)}`,
+        `Progress: ${bt.warPDetails.percentage}`,
         ``,
         `InitialStats:`,
         `- DMG: ${bt.tower.base.dmg.min}-${bt.tower.base.dmg.max} (${smol(bt.tower.Sdps[0])}-${smol(bt.tower.Sdps[1])} DPS)`,
