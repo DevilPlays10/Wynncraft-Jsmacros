@@ -9,6 +9,8 @@
     "conf": {
         "guildCommandEnabled": true,
         "guildCommandName": "lg",
+        "playerCommandEnabled": true,
+        "playerCommandName": "lp",
         "MapMembersEnabled": false,
         "LogWarsEnabled": true,
         "AutoStartWarOnMenuDefence": false,
