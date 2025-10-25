@@ -27,4 +27,4 @@ function setInterval(wrapped, timeout) {
     return cancel;
 }
 
-module.exports = { timer, WynGET, setInterval }
+module.exports = { timer, WynGET, setInterval, config }

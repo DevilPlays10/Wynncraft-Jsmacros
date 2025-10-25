@@ -56,4 +56,4 @@ setInterval(() => {
     updateTerritories()
 }, 1000*10);
 
-module.exports = {getTerData, getMapHQS, getExternals, getMapDef, isFFA}
+module.exports = { getTerData, getMapHQS, getExternals, getMapDef, isFFA }
