@@ -25,7 +25,9 @@ function warmenu(e, conf) {
     // Chat.log(cost)
     if (!terr_) {
         // Chat.log("e")
-        terr=slot[slot.length-4].getString().match(/(?<=§7).*/g, '')[0]
+        const match = slot[slot.length-4].getString().match(/(?<=§7).*/g, '')
+        if (!match) return
+        terr=match[0]
         // Chat.log(terr)
     } else terr = terr_[0]
     if (!terr) return
