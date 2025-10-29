@@ -1,5 +1,5 @@
-const { WynGET, timer } = require('../../functions.js')
-const { getGuildsSync } = require('../../process/ext/Guilds')
+const { WynGET, Utility } = require('../../functions.js')
+const guild = require('./guild.js')
 
 const rankColors = {
     "VIP": [75, 148, 18],
@@ -9,77 +9,8 @@ const rankColors = {
     "CHAMPION": [241, 241, 51]
 }
 
-
-function guild(name) {
-    if (name.match(/[^a-zA-Z ]/g)) {
-        Chat.log(Chat.createTextBuilder()
-            .append(`[GuildLookup]`).withColor(59, 158, 45)
-            .append(` Invalid name`)
-            .append(` "${name}"`).withColor(15, 90, 128)
-        )
-        return true
-    }
-    Chat.log(Chat.createTextBuilder()
-        .append(`[GuildLookup]`).withColor(59, 158, 45)
-        .append(` Searching for guild:`)
-        .append(` "${name}"`).withColor(15, 90, 128)
-    )
-
-
-    if (name.length <= 4) {
-        const gsync = getGuildsSync()
-        if (!gsync.map(ent => ent[1]).includes(name)) name = gsync.filter(ent => ent[1].toLowerCase() == name.toLowerCase()).map(ent => ent[1])[0]
-    }
-
-    const response = WynGET((name.length <= 4) ? `/guild/prefix/${name}` : `/guild/${name}`)
-    // Chat.log(response.responseCode)
-    if (response.responseCode == 200) {
-        const r = JSON.parse(response.text())
-
-        // const checkCD = time => (new Date()-new Date(time))<604800000
-        const msg = Chat.createTextBuilder()
-            .append(`[GuildLookup] `).withColor(59, 158, 45)
-            .append(`${r.name} [${r.prefix}] (Lv. ${r.level})`).withColor(91, 81, 168)
-            .append(` has `)
-            .append(`${r.online}/${r.members.total}`).withColor(91, 81, 168)
-            .append(` online`)
-        for (const rank of ['owner', 'chief', 'strategist', 'captain', 'recruiter', 'recruit']) {
-            const online = Object.entries(r.members[rank]).filter(ent => ent[1].online)
-            if (online.length) {
-                msg.append(`\n${rank.toUpperCase()} (${online.length}):\n`).withColor(76, 120, 210)
-                online.forEach((ent, i) => {
-                    msg.append(i + 1 == online.length ? `${ent[0]}` : `${ent[0]}, `)
-                        .withShowTextHover(Chat.createTextBuilder()
-                            .append(`Server: ${ent[1].server}\nJoined: ${timer(ent[1].joined)} ago\n\nClick to message`)
-                            .build()
-                        )
-                        // .withCustomClickEvent(JavaWrapper.methodToJava(() => {
-                        //     Chat.log("ee")
-                        //     // player(ent[1].uuid)
-                        // }))
-                        .withClickEvent(`suggest_command`, `/msg ${ent[0]} `)
-                })
-            }
-        }
-
-        Chat.log(msg)
-    } else {
-        Chat.log(
-            Chat.createTextBuilder()
-                .append(`[GuildLookup] `).withColor(59, 158, 45)
-                .append('Error').withShowTextHover(
-                    Chat.createTextBuilder().append(response.error).build()
-                ).withFormatting(true, false, false, false, false).withColor(228, 8, 10)
-                .append(` Could not fetch guild`)
-                .append(` "${name}"`).withColor(15, 90, 128)
-                .append(`, Did you type it correctly? `)
-        )
-    }
-}
-
-function player(name) {
-
-    if (!name.match(/(?:(?:^[a-zA-Z_0-9]{3,16}$)|(?:^[0-9a-z-]{36}$))/g)) {
+module.exports = (name) => {
+        if (!name.match(/(?:(?:^[a-zA-Z_0-9]{3,16}$)|(?:^[0-9a-z-]{36}$))/g)) {
         Chat.log(Chat.createTextBuilder()
             .append(`[PlayerLookup]`).withColor(59, 158, 45)
             .append(` Invalid name`)
@@ -92,15 +23,25 @@ function player(name) {
         .append(` Searching for player:`)
         .append(` "${name}"`).withColor(15, 90, 128)
     )
+
     // WynGET(`/player/${name}?fullResult`)
+    const st_time = new Date()
     const response = WynGET(`/player/${name}?fullResult`)
     // Chat.log(response.responseCode)
+    
     if (response.responseCode == 200) {
         const r = JSON.parse(response.text())
+        const ageHeader = response?.headers?.Age??[]
 
         const rank = (r.shortenedRank?.toUpperCase() ?? r.supportRank?.toUpperCase() ?? '').replace(/PLUS$/g, '+')
         const msg = Chat.createTextBuilder()
-            .append(`[PlayerLookup] `).withColor(59, 158, 45)
+            .append(`[PlayerLookup] `).withColor(59, 158, 45).withShowTextHover(Chat.createTextBuilder()
+                .append(`Request Details:\n`).withColor(91, 81, 168)
+                .append(`- Latency:`).withColor(76, 120, 210).append(` ${new Date()-st_time}ms\n`)
+                .append('- Last Update:').withColor(76, 120, 210).append(` ${Utility.Date.relative((ageHeader[0]??0)*1000, 'hms', true)} ago\n`)
+                .append(`- Next Update:`).withColor(76, 120, 210).append(` in ${Utility.Date.relative(new Date(response.headers.expires[0])-new Date(), 'hms', true)}`)
+                .build()
+            )
             .append(rank ? `(` : '')
             .append(rank ? `${rank}` : '').withColor(...rankColors[rank] ?? [79, 135, 49])
             .append(rank ? `) ` : '')
@@ -113,7 +54,7 @@ function player(name) {
             .withClickEvent(`copy_to_clipboard`, r.uuid)
         if (r.restrictions.mainAccess) {
             msg.append('- MainAccess ').append('-Restricted-\n').withColor(228, 8, 10)
-        } else msg.append('- Joined ').append(`${timer(r.firstJoin)}`).withColor(93, 226, 231).append(' ago\n')
+        } else msg.append('- Joined ').append(`${Utility.Date.relative(new Date(r.firstJoin), 'ydhm')}`).withColor(93, 226, 231).append(' ago\n')
 
         if (r.restrictions.onlineStatus) {
             msg.append('- OnlineStatus ').append('-Restricted-').withColor(228, 8, 10)
@@ -134,7 +75,7 @@ function player(name) {
                     .append(')')
             }
         } else msg.append(`- Currently `).append('offline').withColor(228, 8, 10).append(' - ')
-            .append(`${timer(r.lastJoin)}`).withColor(228, 8, 10).append(' ago on ').append(`${r.server ?? 'Null'}`).withColor(125, 218, 88)
+            .append(`${Utility.Date.relative(new Date(r.lastJoin), 'ydhms')}`).withColor(228, 8, 10).append(' ago on ').append(`${r.server ?? 'Null'}`).withColor(125, 218, 88)
 
 
         if (r.restrictions.mainAccess) {
@@ -184,7 +125,6 @@ function player(name) {
                         .append(`UUID: ${user[0]}\n\nClick to view`)
                         .build()
                     ).withCustomClickEvent(JavaWrapper.methodToJavaAsync(() => {
-                        player(user[0])
                     }))
             }
             Chat.log(msg)
@@ -202,5 +142,3 @@ function player(name) {
         }
     }
 }
-
-module.exports = { guild, player }
