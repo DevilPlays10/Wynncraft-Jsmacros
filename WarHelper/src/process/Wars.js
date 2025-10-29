@@ -1,6 +1,6 @@
 let currentWar;
 
-const {getTerData, getMapHQS, getExternals, getMapDef} = require('./ext/Territories.js')
+const {getTerData, getMapHQS, getExternals, getMapDef, getRawData } = require('./ext/Territories.js')
 const {CWar:sendwar} = require('./Eco')
 // const { pushToLogs } = require('../main')
 
@@ -25,6 +25,7 @@ function War(data) {
         const hq = queued[data[2]]? queued[data[2]].hq : getMapHQS().includes(data[2])
         currentWar={
             Cons: ter?.cons??0,
+            map: getRawData(data[2]),
             Guild: data[1],
             Territory: data[2],
             StartHP: data[3],

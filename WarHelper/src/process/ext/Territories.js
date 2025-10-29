@@ -5,10 +5,19 @@ const AdvancementFrame  = Java.type("net.minecraft.class_189")
 
 let terrs;
 
+//instantly update terr cache for a bit (until next update) using chat to account for insta queues
+function forceFinishUpdate(terr, guild) {
+    terrs[terr] = {...terrs[terr], guild: {prefix: guild}, acquired: new Date().toISOString()}
+}
+
 function updateTerritories() {
     const res = WynGET(`/guild/list/territory`)
     if (res.responseCode!==200) return
     terrs = JSON.parse(res.text())
+}
+
+function getRawData(name) {
+    return terrs[name]
 }
 
 function getTerData(name) { //cons
@@ -56,4 +65,4 @@ setInterval(() => {
     updateTerritories()
 }, 1000*10);
 
-module.exports = { getTerData, getMapHQS, getExternals, getMapDef, isFFA }
+module.exports = { getTerData, getMapHQS, getExternals, getMapDef, isFFA, getRawData, forceFinishUpdate }

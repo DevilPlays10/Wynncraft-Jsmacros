@@ -1,3 +1,5 @@
+const { Utility } = require('../functions')
+
 const [aura, volley] = [[0, 24, 18, 12], [0, 20, 15, 10]]
 const upgrades = {
     attack: [0.5, 0.75, 1, 1.25, 1.6, 2, 2.5, 3, 3.6, 3.8, 4.2, 4.7],
@@ -19,6 +21,14 @@ const c = {
         "Medium": [255, 238, 126],
         "High": [255, 85, 85],
         "Very High": [191, 0, 0]
+    },
+    tres: {
+        "Very Low": [72, 140, 63],
+        "Low": [126, 255, 109],
+        "Medium": [255, 238, 126],
+        "High": [255, 85, 85],
+        "Very High": [85, 255, 255]
+
     }
 }
 
@@ -45,7 +55,16 @@ class War {
         // this.raw = war
         const [dmg, attack] = [war.StartDMG.split('-'), Number(war.attack.replace(/[x]/g, ''))]
         const endDmg = war.EndDMG.split('-')
-        this.meta = {guild: war.Guild, cons: war.Cons, terr: war.Territory, externals: war.externals, multiplier: war.HQ? (1+(0.3*war.Cons))*(1+(0.5+0.25*(war.Cons+war.externals))): (1+(0.3*war.Cons))}
+        this.meta = {
+            guild: war.Guild, 
+            cons: war.Cons, 
+            terr: war.Territory, 
+            externals: war.externals, 
+            multiplier: war.HQ? (1+(0.3*war.Cons))*(1+(0.5+0.25*(war.Cons+war.externals))): (1+(0.3*war.Cons)),
+            tower: {
+                heldTime: (new Date()/1000 - new Date(war.map.acquired)/1000).toFixed()
+            }
+        }
         this.tower = {
             base: {dmg: {min: dmg[0], max: dmg[1]}, attack, health: war.StartHP, defence: war.defence.replace(/[%]/g, '')},
             Sdps: [(dmg[0]*attack).toFixed(), (dmg[1]*attack).toFixed()],
@@ -73,7 +92,17 @@ class War {
             health: upgrades.health.indexOf(roundnear(upgrades.health, Number(this.tower.base.health/this.meta.multiplier))),
             defence: upgrades.defence.indexOf( Number(war.defence.replace(/[%]/g, '')) ),
         }
+
         this.meta.eMultiplier=(Object.values(this.upgrades).reduce((a, c)=>a+c,0)) + (this.bonuses.aura? this.bonuses.aura+5:0) + (this.bonuses.volley? this.bonuses.volley+3:0)
+        this.meta.tower.treasury = (() => {
+            const time = this.meta.tower.heldTime
+            if (time<3600) return "Very Low"
+            if (time>3600&&time<86400) return "Low"
+            if (time>86400&&time<432000) return "Medium"
+            if (time>432000&&time<1036800) return "High"
+            return "Very High"
+        })()
+
         this.def = {
             MapDef: war.mapdef??'N/A',
             CalcDef: Object.entries(this.warPDetails.HQ? defCalc.hq:defCalc.normal).filter(ent=>{
@@ -101,12 +130,16 @@ function CWar(war) {
             [` ${bt.meta.guild}`, c.textRes]
         ],
         [
+            ['Held: ', c.text],
+            [Utility.Date.relative(bt.meta.tower.heldTime*1000, 'dhms', true), c.num]
+        ],
+        [
             [(bt.warPDetails.HQ? `Cons(Ext): `: `Cons: `), c.text],
             [(bt.warPDetails.HQ?`${bt.meta.cons}(${bt.meta.externals??0})`: bt.meta.cons), c.num]
         ],
         [
             [`Duration: `, c.text],
-            [`${bt.warPDetails.duration}s`, c.num]
+            [Utility.Date.relative(bt.warPDetails.duration*1000, 'hms', true), c.num]
         ],
         [
             [`DPS: `, c.text],
@@ -116,12 +149,12 @@ function CWar(war) {
             ['Progress: ', c.text],
             [bt.warPDetails.percentage, c.num]
         ],
+        // [ //buggy as fuck
+        //     ['Members: ', c.text],
+        //     [bt.warPDetails.members.join(', ')+'\n', c.textRes]
+        // ],
         [
-            ['Members: ', c.text],
-            [bt.warPDetails.members.join(', ')+'\n', c.textRes]
-        ],
-        [
-            [`InitialStats:\n`, c.textRes],
+            [`\nInitialStats:\n`, c.textRes],
             [`- DMG: `, c.text],
             [`${bt.tower.base.dmg.min}-${bt.tower.base.dmg.max}`, c.num],
             [` (${smol(bt.tower.Sdps[0])}-${smol(bt.tower.Sdps[1])} DPS)\n`, c.num2],
@@ -152,6 +185,8 @@ function CWar(war) {
         ],
         [
             [`Eco:\n`, c.textRes],
+            [`- Treasury: `, c.text],
+            [`${bt.meta.tower.treasury}\n`, c.tres[bt.meta.tower.treasury]??c.none],
             [`- WynnDef: `, c.text],
             [`${bt.def.MapDef}\n`, c.defs[bt.def.MapDef]??c.none],
             [`- CalcDef: `, c.text],
@@ -169,8 +204,9 @@ function CWar(war) {
         '```ex',
         `Territory: ${bt.meta.terr} ${bt.warPDetails.HQ? `(HQ)`: ''}`,
         `Guild: ${bt.meta.guild}`,
+        `Held: ${Utility.Date.relative(bt.meta.tower.heldTime*1000, 'dhms', true)}`,
         `${bt.warPDetails.HQ? `Cons(Ext): ${bt.meta.cons}(${bt.meta.externals??0})`: `Cons: ${bt.meta.cons}`}`,
-        `Duration: ${bt.warPDetails.duration}s`,
+        `Duration: ${Utility.Date.relative(bt.warPDetails.duration*1000, 'hms', true)}s`,
         `DPS: ${smol(bt.warPDetails.avgDPS)}`,
         `Progress: ${bt.warPDetails.percentage}`,
         ``,
@@ -187,6 +223,7 @@ function CWar(war) {
         `- DEF: ${bt.tower.base.defence}%`,
         ``,
         `Eco:`,
+        `- Treasury: ${bt.meta.tower.treasury}`,
         `- WynDef: ${bt.def.MapDef}`,
         `- CalcDef: ${bt.def.CalcDef}`,
         `- Upgrades: ${bt.upgrades.dmg}-${bt.upgrades.attack}-${bt.upgrades.health}-${bt.upgrades.defence}`,
