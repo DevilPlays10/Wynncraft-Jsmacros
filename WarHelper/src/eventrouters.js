@@ -39,7 +39,7 @@ JsMacros.on("RecvMessage", JavaWrapper.methodToJava((evt) => {
     if (txt.match(/(?<=The war for )(.+?)(?= will start in)/) && txt.endsWith(" minutes.")) queue(txt.match(/(?<=The war for )(.+?)(?= will start in)/)[0])
     if (txt.startsWith("You have died at ")) finishforce()
 
-    for (const m of txt.matchAll(/^You have taken control of (?<Territory>.+) from \[(?<Guild>.+)\]!/g)) {
+    for (const m of txt.matchAll(/You have taken control of (?<Territory>.+) from \[(?<Guild>.+)\]!/g)) {
         Finish(m.groups.Territory)
         forceFinishUpdate(m.groups.Territory, m.groups.Guild)
     }
