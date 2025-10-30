@@ -9,8 +9,11 @@ const rankColors = {
     "CHAMPION": [241, 241, 51]
 }
 
-module.exports = (name) => {
-        if (!name.match(/(?:(?:^[a-zA-Z_0-9]{3,16}$)|(?:^[0-9a-z-]{36}$))/g)) {
+module.exports = (name) => player(name)
+
+
+function player(name) {
+    if (!name.match(/(?:(?:^[a-zA-Z_0-9]{3,16}$)|(?:^[0-9a-z-]{36}$))/g)) {
         Chat.log(Chat.createTextBuilder()
             .append(`[PlayerLookup]`).withColor(59, 158, 45)
             .append(` Invalid name`)
@@ -28,18 +31,18 @@ module.exports = (name) => {
     const st_time = new Date()
     const response = WynGET(`/player/${name}?fullResult`)
     // Chat.log(response.responseCode)
-    
+
     if (response.responseCode == 200) {
         const r = JSON.parse(response.text())
-        const ageHeader = response?.headers?.Age??[]
+        const ageHeader = response?.headers?.Age ?? []
 
         const rank = (r.shortenedRank?.toUpperCase() ?? r.supportRank?.toUpperCase() ?? '').replace(/PLUS$/g, '+')
         const msg = Chat.createTextBuilder()
             .append(`[PlayerLookup] `).withColor(59, 158, 45).withShowTextHover(Chat.createTextBuilder()
                 .append(`Request Details:\n`).withColor(91, 81, 168)
-                .append(`- Latency:`).withColor(76, 120, 210).append(` ${new Date()-st_time}ms\n`)
-                .append('- Last Update:').withColor(76, 120, 210).append(` ${Utility.Date.relative((ageHeader[0]??0)*1000, 'hms', true)} ago\n`)
-                .append(`- Next Update:`).withColor(76, 120, 210).append(` in ${Utility.Date.relative(new Date(response.headers.expires[0])-new Date(), 'hms', true)}`)
+                .append(`- Latency:`).withColor(76, 120, 210).append(` ${new Date() - st_time}ms\n`)
+                .append('- Last Update:').withColor(76, 120, 210).append(` ${Utility.Date.relative((ageHeader[0] ?? 0) * 1000, 'hms', true)} ago\n`)
+                .append(`- Next Update:`).withColor(76, 120, 210).append(` in ${Utility.Date.relative(new Date(response.headers.expires[0]) - new Date(), 'hms', true)}`)
                 .build()
             )
             .append(rank ? `(` : '')
@@ -62,14 +65,14 @@ module.exports = (name) => {
             msg.append(`- Currently `)
                 .append('online').withColor(125, 218, 88).append(' on ')
                 .append(`${r.server ?? 'Null'}`).withColor(125, 218, 88)
-            if (r.activeCharacter && r.characters[r.activeCharacter]) {
+            if (r.characters) if (r.activeCharacter && r.characters[r.activeCharacter]) {
                 msg.append(' (').append(r.characters[r.activeCharacter].type.slice(0, 3)).withColor(32, 170, 175).withFormatting(true, false, false, false, false)
                     .withShowTextHover(Chat.createTextBuilder()
                         .append(`${r.characters[r.activeCharacter]?.reskin ?? r.characters[r.activeCharacter]?.type} ${r.characters[r.activeCharacter].nickname ? `(${r.characters[r.activeCharacter].nickname})` : ''}`).withColor(237, 164, 68)
                         .append(`\n\nTotalLevel: `).withColor(255, 235, 158).append(r.characters[r.activeCharacter]?.totalLevel).append(` (${r.characters[r.activeCharacter]?.level})`)
                         .append(`\nPlaytime: `).withColor(255, 235, 158).append(r.characters[r.activeCharacter]?.playtime + 'h')
                         .append('\nWars: ').withColor(255, 235, 158).append(r.characters[r.activeCharacter]?.wars)
-                        .append('\nGamemodes: ').withColor(255, 235, 158).append('\n - ' + r.characters[r.activeCharacter]?.gamemode.join('\n - '))
+                        .append('\nGamemodes: ').withColor(255, 235, 158).append(r.characters[r.activeCharacter]?.gamemode.length ? '\n - ' + r.characters[r.activeCharacter]?.gamemode.join('\n - ') : 'None')
                         .build()
                     )
                     .append(')')
@@ -125,6 +128,7 @@ module.exports = (name) => {
                         .append(`UUID: ${user[0]}\n\nClick to view`)
                         .build()
                     ).withCustomClickEvent(JavaWrapper.methodToJavaAsync(() => {
+                        player(user[0])
                     }))
             }
             Chat.log(msg)
