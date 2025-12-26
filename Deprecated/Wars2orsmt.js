@@ -1,4 +1,4 @@
-const {isFFA} = require('./ext/Territories.js')
+const {isFFA} = require('../Main/src/process/ext/Territories.js')
 
 const defs = {
     "very low": ["very low"],
@@ -9,6 +9,7 @@ const defs = {
 }
 
 function warmenu(e, conf) {
+    // e is the event while conf is passed config object \
     const name = e.screen?.getTitleText()?.getString()
     if (!name.startsWith('Attacking: ')) return
     Time.sleep(250)

@@ -1,4 +1,5 @@
 const config = JSON.parse((FS.open('../storage/config.json', 'utf-8')).read())
+const processInfo = JSON.parse((FS.open('../storage/processInfo.json', 'utf-8')).read())
 
 function WynGET(path) {
     try {
@@ -17,6 +18,20 @@ function timer(val) { //ungracefully stolen from cmds/admin/profile
     return (`${days ? `${days}d` : `${hours ? `${hours.toFixed(0)}h` : `${minutes ? `${minutes.toFixed(0)}m` : `0m`}`}`}`).trim()
 }
 
+function writeToLogsFile(data, file) {
+    if (!FS.exists(`../storage/Logs/${processInfo.startDate}`)) {
+        FS.makeDir(`../storage/Logs`)
+        FS.makeDir(`../storage/Logs/${processInfo.startDate}`,)
+    }
+    const File = FS.open(`../storage/Logs/${processInfo.startDate}/${file}`)
+    File.write(JSON.stringify(data, null, 1))
+}
+
+function readLogsFile(file) {
+    if (!FS.exists(`../storage/Logs/${processInfo.startDate}/${file}`)) return
+    return (FS.open(`../storage/Logs/${processInfo.startDate}/${file}`)).read()
+}
+
 function setInterval(wrapped, timeout) {
     let cancel = { "cancelled": false }
     JavaWrapper.methodToJavaAsync(() => {
@@ -30,8 +45,8 @@ function setInterval(wrapped, timeout) {
 
 const Utility = {
     Date: {
-        relative: (time, include, dura) => {
-            const elapsedTime = dura? time: new Date() - time;
+        relative: (time, include, dura, onlyFans) => {
+            const elapsedTime = dura ? time : new Date() - new Date(time);
             let totalSeconds = Math.floor(elapsedTime / 1000);
 
             const units = {
@@ -52,9 +67,11 @@ const Utility = {
                 }
             }
 
+            if (onlyFans) return array.slice(0, onlyFans).join(' ') ?? '0s'
             return array.length ? array.join(' ') : '0s';
         }
     }
 }
 
-module.exports = { timer, WynGET, setInterval, config, Utility }
+
+module.exports = { timer, WynGET, setInterval, config, Utility, writeToLogsFile, readLogsFile }

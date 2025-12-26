@@ -1,9 +1,10 @@
 {
-    "version": "1.08.1 release",
+    "version": "1.10 release",
     "urls": {
         "wyn": "https://api.wynncraft.com/v3"
     },
     "tokens": {
+        "_comment": "This token will be used for all wynn api requests, if left blank no token will be used",
         "wyn": null
     },
     "conf": {
@@ -11,10 +12,7 @@
         "guildCommandName": "lg",
         "playerCommandEnabled": true,
         "playerCommandName": "lp",
-        "MapMembersEnabled": false,
-        "LogWarsEnabled": true,
-        "AutoStartWarOnMenuDefence": false,
-        "AutoStartWarOnMenuAcceptablePrice": 0,
-        "AutoStartWarOnFFA_ONLY": false
+        "warHistoryCommandEnabled": true,
+        "warHistoryCommandName": "history"
     }
 }

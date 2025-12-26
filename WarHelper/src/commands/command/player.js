@@ -11,7 +11,6 @@ const rankColors = {
 
 module.exports = (name) => player(name)
 
-
 function player(name) {
     if (!name.match(/(?:(?:^[a-zA-Z_0-9]{3,16}$)|(?:^[0-9a-z-]{36}$))/g)) {
         Chat.log(Chat.createTextBuilder()

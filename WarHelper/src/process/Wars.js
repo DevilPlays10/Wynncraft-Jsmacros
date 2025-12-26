@@ -2,7 +2,7 @@ let currentWar;
 
 const {getTerData, getMapHQS, getExternals, getMapDef, getRawData } = require('./ext/Territories.js')
 const {CWar:sendwar} = require('./Eco')
-// const { pushToLogs } = require('../main')
+const { pushToLogs } = require('../main')
 
 // Chat.log(getTerData('Ancient Excavation'))
 // Chat.log(getExternals('Ancient Excavation'))
@@ -60,6 +60,7 @@ function multihitDetec() {
         all: []
     }
     const score_ = World.getScoreboards()?.getCurrentScoreboard()?.getKnownPlayers()
+    // pushToLogs('score.txt', JSON.stringify(score_))
     if (!score_) return
     const score = score_.join(',')
     if (!score.match(regex[0])) return
@@ -68,7 +69,7 @@ function multihitDetec() {
     for (const m of score.matchAll(regex[1])) if (!final.all.includes(m.groups.name)) final.all.push(m.groups.name)
     return { targetted: removeNear(final.targetted), all: removeNear(final.all)}
 
-    function removeNear(arr) {
+    function removeNear(arr) { //THIS IS HIGHLY INACCURATE
         const result = [];
 
         for (const item of arr) {

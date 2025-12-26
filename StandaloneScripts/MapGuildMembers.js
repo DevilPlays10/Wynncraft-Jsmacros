@@ -1,9 +1,16 @@
+// This script logs all the members from the guild member management page when you open them into a parseable format
+// After going thru the pages and closing the screen, a message appears in the chat to copy the members list
+// the result is a JSON object as
+// Name: { xp: Number, info: Str, streak: int }
+
+const guildName = "Black Fangs" 
+
 let obj = {}
 
-module.exports = evt => {
+JsMacros.on("ContainerUpdate", JavaWrapper.methodToJava((evt) => {
     const screen = evt.screen
     const screenName = screen.getTitleText()?.getString()
-    if (screenName.startsWith("Black Fangs: Members")) {
+    if (screenName.startsWith(`${guildName}: Members`)) {
        for (item of evt.inventory.getItems().filter(ent=>ent.getDefaultName().toString().includes("Player Head"))) {
             obj[item.getName().withoutFormatting().getString()] = {
                 "xp": Number(item.getLore()[2].withoutFormatting().getString().split(": ")[1].replace(/,/g, "")),
@@ -21,4 +28,4 @@ module.exports = evt => {
             obj = {}
         }));
     }
-}
+}))

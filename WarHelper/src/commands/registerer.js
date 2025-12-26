@@ -1,6 +1,7 @@
 
 const guild = require('./command/guild')
 const player = require('./command/player')
+const history = require('./command/history')
 
 
 const { getGuildsSync } = require('../process/ext/Guilds')
@@ -15,9 +16,13 @@ const commands = [
     })).suggestMatching(getGuildsSync()?.flat(1) ?? []) : null,
     conf.playerCommandEnabled ? Chat.createCommandBuilder(conf.playerCommandName).greedyStringArg('name').executes(JavaWrapper.methodToJavaAsync((ent) => {
         const name = ent.getArg('name')
-        player(name) //idk how to use await with this and return true within 300ms so this works of rnow
+        player(name)
         return true
-    })) : null
+    })) : null,
+    conf.warHistoryCommandEnabled ? Chat.createCommandBuilder(conf.warHistoryCommandName).executes(JavaWrapper.methodToJavaAsync((ent) => {
+        history.run()
+        return true
+    })) : null,
 ]
 
 commands.filter(ent => ent).forEach(ent => ent.register())

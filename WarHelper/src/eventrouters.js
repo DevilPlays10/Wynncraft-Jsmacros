@@ -1,21 +1,14 @@
-const MapGMembers = require('./process/MapGuildMembers.js')
 const { War, Finish, markBonus, queue, finishforce } = require('./process/Wars.js')
-const { warmenu } = require('./process/Wars2orsmt.js')
 const { forceFinishUpdate } = require('./process/ext/Territories.js')
-
-const { conf } = JSON.parse((FS.open('../storage/config.json', 'utf-8')).read())
-
-JsMacros.on("ContainerUpdate", JavaWrapper.methodToJava((evt) => {
-    warmenu(evt, conf)
-    if (conf.MapMembersEnabled) MapGMembers(evt)
-}))
 
 // const [a, b] = ['[DEU] Almuj Tower - ❤ 974999 (62.5%) - ☠ 2340-3509 (0.75x)', '[DEU] Almuj Tower - ❤ 24999 (62.5%) - ☠ 2340-3509 (0.75x)']
 
 // simulate()
+// Time.sleep(1000)
+// simulate()
 // function simulate() {
 //     Chat.log("starting")
-//     Time.sleep(5000)
+//     Time.sleep(2000)
 //     const match = a.matchAll(/\[(\w{1,4})\] ([\w' ]+) Tower - ❤ (\d+) \((\d{2}.\d%)\) - ☠ (\d+-\d+) \((\d\.\d{1,2}x)\)/g)
 //     for (const m of match) War(m)
 //     Time.sleep(1000)
@@ -30,7 +23,7 @@ JsMacros.on("Bossbar", JavaWrapper.methodToJava((evt) => {
     if (!name) return
     const name_ = (name?.text ? name.text : name).replace(/Â§/g, "§").replace(/§./g, "").replace(/[â¤˜"\\]/g, '')
     const match = name_.matchAll(/\[(\w{1,4})\] ([\w' ]+) Tower - ❤ (\d+) \((\d{2}.\d%)\) - ☠ (\d+-\d+) \((\d\.\d{1,2}x)\)/g)
-    for (const m of match) if (conf.LogWarsEnabled) War(m)
+    for (const m of match) War(m)
 }))
 
 JsMacros.on("RecvMessage", JavaWrapper.methodToJava((evt) => {
